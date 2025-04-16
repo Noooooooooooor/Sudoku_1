@@ -1,0 +1,49 @@
+def main_game_loop():
+    game, solution = load_labeled_sudoku()
+    strikes = 0
+    max_strikes = 3
+
+    while True:
+        display_board(game)
+        print(f"Strikes: {strikes}/{max_strikes}")
+        print("Enter your move as: row col number (0-indexed), or 'q' to quit(put spaces after the numbers):")
+        user_input = input(">> ").strip()
+
+        if user_input.lower() == 'q':
+            print("Thanks for playing!")
+            break
+
+        try:
+            row, col, num = map(int, user_input.split())
+            
+            if row < 0 or col < 0 or num < 0:
+               print("❌ Error: Negative numbers cannot be input.")
+               continue
+
+            
+            if game[row][col] != 0:
+                print("Cell is already filled. Try a different move.")
+                continue
+
+            if solution[row][col] == num:
+                game[row][col] = num
+            else:
+                strikes += 1
+                print("Incorrect number.")
+
+        except (ValueError, IndexError):
+            print("Invalid input. Please use format: row col num (0-indexed)")
+
+        game_status = check_end(game, solution, max_strikes, strikes)
+        if game_status == 'Won':
+            print("Congratulations! You completed the puzzle.")
+            break
+        elif game_status == 'Lost':
+            print("Game over! You've reached the maximum number of strikes.")
+            print("Correct solution:")
+            display_board(solution)
+            break
+
+
+if __name__ == "__main__":
+    main_game_loop()
